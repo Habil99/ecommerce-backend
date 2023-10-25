@@ -9,3 +9,34 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id               Int                @id @default(autoincrement())
+  firstName        String             @map("first_name")
+  lastName         String             @map("last_name")
+  email            String             @unique
+  password         String
+  isActive         Boolean?           @default(false) @map("is_active")
+  isConfirmed      Boolean?           @default(false) @map("is_confirmed")
+  isDeleted        Boolean?           @default(false) @map("is_deleted")
+  createdAt        DateTime?          @default(now()) @map("created_at")
+  updatedAt        DateTime?          @updatedAt @map("updated_at")
+  OtpConfirm       OtpConfirm[]
+  OtpResetPassword OtpResetPassword[]
+}
+
+model OtpConfirm {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int      @map("user_id")
+  otpCode    Int      @map("otp_code")
+  expiryDate DateTime @map("expiry_date")
+}
+
+model OtpResetPassword {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int      @map("user_id")
+  otpCode    Int      @map("otp_code")
+  expiryDate DateTime @map("expiry_date")
+}
