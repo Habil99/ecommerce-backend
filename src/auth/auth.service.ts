@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { PrismaService } from "../services/prisma.service";
+import { PrismaService } from "../service/prisma.service";
 import { SignInDto } from "./dto/sign-in.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import * as bcrypt from "bcrypt";
@@ -12,7 +12,8 @@ import {
   INVALID_AUTH_CREDENTIALS,
   USER_ALREADY_EXISTS,
 } from "../lib/error-messages";
-import { TokenProvider } from "../providers/token.provider";
+import { TokenProvider } from "../provider/token.provider";
+import { SignInResponse, SignUpResponse } from "../model/response.model";
 
 @Injectable()
 export class AuthService {
@@ -23,11 +24,7 @@ export class AuthService {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async signIn(signInDto: SignInDto): Promise<{
-    user: UserDto;
-    accessToken: string;
-    refreshToken: string;
-  }> {
+  async signIn(signInDto: SignInDto): Promise<SignInResponse> {
     const { email, password } = signInDto;
 
     const user = await this.prismaService.user.findUnique({
@@ -56,7 +53,7 @@ export class AuthService {
     };
   }
 
-  async signUp(signUpDto: SignUpDto): Promise<UserDto | null> {
+  async signUp(signUpDto: SignUpDto): Promise<SignUpResponse> {
     const { firstName, lastName, email, password } = signUpDto;
 
     const passwordHash = await this.generatePasswordHash(password);

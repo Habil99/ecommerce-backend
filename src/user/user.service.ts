@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from "../services/prisma.service";
+import { PrismaService } from "../service/prisma.service";
 import { UserDto } from "./dto/user.dto";
 import { plainToInstance } from "class-transformer";
 import { USER_NOT_FOUND } from "../lib/error-messages";
