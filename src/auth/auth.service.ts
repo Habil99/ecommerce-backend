@@ -9,12 +9,22 @@ import { UserDto } from "../user/dto/user.dto";
 import { plainToInstance } from "class-transformer";
 import { UserService } from "../user/user.service";
 import {
+  EMAIL_CONFIRMED,
   INVALID_AUTH_CREDENTIALS,
+  INVALID_OTP,
+  INVALID_TOKEN,
+  OTP_NOT_FOUND,
   USER_ALREADY_EXISTS,
 } from "../lib/error-messages";
 import { TokenProvider } from "../provider/token.provider";
-import { SignInResponse, SignUpResponse } from "../model/response.model";
+import {
+  ConfirmEmailResponse,
+  SignInResponse,
+  SignUpResponse,
+} from "../model/response.model";
 import { MailService } from "../service/mail.service";
+import { OtpService } from "../service/otp.service";
+import { EmailConfirmationDto } from "./dto/email-confirmation.dto";
 
 @Injectable()
 export class AuthService {
@@ -24,6 +34,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly tokenProvider: TokenProvider,
     private readonly mailService: MailService,
+    private readonly otpService: OtpService,
   ) {}
 
   async signIn(signInDto: SignInDto): Promise<SignInResponse> {
@@ -82,14 +93,51 @@ export class AuthService {
         },
       });
 
-      const emailToken = this.jwtService.sign({ email: user.email });
+      const emailToken = this.tokenProvider.signEmailToken(user.id);
 
       await this.mailService.sendUserConfirmation(user, emailToken);
+
+      await this.otpService.createEmailConfirmationOtp(user.id);
 
       return plainToInstance(UserDto, user);
     } catch (e) {
       throw new BadRequestException(e);
     }
+  }
+
+  async confirmEmail(
+    emailConfirmationDto: EmailConfirmationDto,
+  ): Promise<ConfirmEmailResponse> {
+    const { emailToken, otpCode } = emailConfirmationDto;
+    const { userId } = this.tokenProvider.verifyEmailToken(emailToken);
+
+    if (!userId) {
+      throw new BadRequestException(INVALID_TOKEN);
+    }
+
+    const emailConfirmationOtp =
+      await this.otpService.getEmailConfirmationOtp(userId);
+
+    if (!emailConfirmationOtp) {
+      throw new BadRequestException(OTP_NOT_FOUND);
+    }
+
+    const emailIsConfirmed = await this.otpService.verifyEmailConfirmationOtp(
+      otpCode,
+      emailConfirmationOtp,
+    );
+
+    if (!emailIsConfirmed) {
+      throw new BadRequestException(INVALID_OTP);
+    }
+
+    await this.userService.confirmEmail(userId);
+    await this.otpService.deleteEmailConfirmationOtp(userId);
+
+    return {
+      success: true,
+      message: EMAIL_CONFIRMED,
+    };
   }
 
   async generatePasswordHash(password: string): Promise<string> {

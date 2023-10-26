@@ -11,4 +11,12 @@ export class TokenProvider {
 
     return { accessToken, refreshToken };
   }
+
+  signEmailToken(userId: number): string {
+    return this.jwtService.sign({ userId }, { expiresIn: "1d" });
+  }
+
+  verifyEmailToken(token: string): { userId: number } {
+    return this.jwtService.verify(token);
+  }
 }

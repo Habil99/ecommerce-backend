@@ -7,3 +7,8 @@ export interface SignInResponse {
 }
 
 export interface SignUpResponse extends UserDto {}
+
+export interface ConfirmEmailResponse {
+  success: boolean;
+  message: string;
+}

@@ -10,6 +10,7 @@ import { PrismaService } from "../service/prisma.service";
 import { UserService } from "../user/user.service";
 import { TokenProvider } from "../provider/token.provider";
 import { MailService } from "../service/mail.service";
+import { OtpService } from "../service/otp.service";
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { MailService } from "../service/mail.service";
     UserService,
     TokenProvider,
     MailService,
+    OtpService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

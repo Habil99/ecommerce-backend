@@ -3,7 +3,12 @@ import { SignInDto } from "./dto/sign-in.dto";
 import { AuthService } from "./auth.service";
 import { Public } from "../decorator/public-route.decorator";
 import { SignUpDto } from "./dto/sign-up.dto";
-import { SignInResponse, SignUpResponse } from "../model/response.model";
+import {
+  ConfirmEmailResponse,
+  SignInResponse,
+  SignUpResponse,
+} from "../model/response.model";
+import { EmailConfirmationDto } from "./dto/email-confirmation.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -19,5 +24,13 @@ export class AuthController {
   @Post("sign-up")
   async signUp(@Body() signUpDto: SignUpDto): Promise<SignUpResponse> {
     return await this.authService.signUp(signUpDto);
+  }
+
+  @Public()
+  @Post("confirm-email")
+  async confirmEmail(
+    @Body() emailConfirmationDto: EmailConfirmationDto,
+  ): Promise<ConfirmEmailResponse> {
+    return await this.authService.confirmEmail(emailConfirmationDto);
   }
 }
