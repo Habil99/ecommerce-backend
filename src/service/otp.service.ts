@@ -1,13 +1,17 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger } from "@nestjs/common";
 import { ConfirmationOtp as EmailConfirmationOtpModel } from "@prisma/client";
 import * as crypto from "crypto";
 import { PrismaService } from "./prisma.service";
 import { OTP_EXPIRED } from "../lib/error-messages";
 import { RuntimeException } from "@nestjs/core/errors/exceptions";
+import { Cron } from "@nestjs/schedule";
 
 @Injectable()
 export class OtpService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly logger: Logger,
+  ) {}
 
   async createEmailConfirmationOtp(userId: number) {
     const otpCode = crypto.randomInt(100000, 999999);
@@ -28,8 +32,6 @@ export class OtpService {
       },
     });
   }
-
-  async createPasswordResetOtp(userId: number) {}
 
   async verifyEmailConfirmationOtp(
     otpCode: number,
@@ -52,5 +54,31 @@ export class OtpService {
     } catch (e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Cron("0 */6 * * * *") // every 6 minutes
+  handleEmailConfirmationOtpCron() {
+    this.prismaService.confirmationOtp
+      .deleteMany({
+        where: {
+          expiryDate: {
+            lte: new Date(),
+          },
+        },
+      })
+      .then((res) => {
+        this.logger.log(
+          new Date() +
+            ": Deleted expired email confirmation OTPs: " +
+            res.count,
+        );
+      })
+      .catch((e) => {
+        this.logger.error(
+          new Date() +
+            ": Error while deleting expired email confirmation OTPs: " +
+            e.message,
+        );
+      });
   }
 }
