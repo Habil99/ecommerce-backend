@@ -11,7 +11,6 @@ export class MailService {
   private readonly transporter: nodemailer.Transporter;
   private readonly confirmationTemplate: handlebars.TemplateDelegate;
   private readonly passwordResetTemplate: handlebars.TemplateDelegate;
-  private groupInviteTemplate: handlebars.TemplateDelegate;
 
   constructor() {
     this.transporter = nodemailer.createTransport(
@@ -25,6 +24,7 @@ export class MailService {
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASSWORD,
         },
+        service: "gmail",
       },
       {
         from: {
@@ -38,7 +38,7 @@ export class MailService {
   }
 
   private loadTemplate(templateName: string): handlebars.TemplateDelegate {
-    const templatesFolderPath = path.join(__dirname, "./templates");
+    const templatesFolderPath = path.join(__dirname, "../../templates"); // FIXME: path is not correct should be in src
     const templatePath = path.join(templatesFolderPath, templateName);
 
     const templateSource = fs.readFileSync(templatePath, "utf8");
@@ -46,7 +46,7 @@ export class MailService {
   }
 
   async sendUserConfirmation(user: UserDto, token: string) {
-    const url = `${process.env.CLIENT_URL}?token=${token}`;
+    const url = `${process.env.CLIENT_URL}/auth/confirm-email?token=${token}`;
     const html = this.confirmationTemplate({
       name: user.firstName,
       url,
@@ -55,6 +55,7 @@ export class MailService {
     await this.transporter.sendMail({
       to: user.email,
       subject: `Welcome ${user.firstName}! Confirm your email and start using the app!`,
+      html,
     });
   }
 }

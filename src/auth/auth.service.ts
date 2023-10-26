@@ -14,6 +14,7 @@ import {
 } from "../lib/error-messages";
 import { TokenProvider } from "../provider/token.provider";
 import { SignInResponse, SignUpResponse } from "../model/response.model";
+import { MailService } from "../service/mail.service";
 
 @Injectable()
 export class AuthService {
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly tokenProvider: TokenProvider,
+    private readonly mailService: MailService,
   ) {}
 
   async signIn(signInDto: SignInDto): Promise<SignInResponse> {
@@ -79,6 +81,10 @@ export class AuthService {
           password: passwordHash,
         },
       });
+
+      const emailToken = this.jwtService.sign({ email: user.email });
+
+      await this.mailService.sendUserConfirmation(user, emailToken);
 
       return plainToInstance(UserDto, user);
     } catch (e) {
