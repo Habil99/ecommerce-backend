@@ -15,6 +15,8 @@ import {
   INVALID_TOKEN,
   OTP_NOT_FOUND,
   USER_ALREADY_EXISTS,
+  USER_NOT_ACTIVE,
+  USER_NOT_CONFIRMED_EMAIL,
 } from "../lib/error-messages";
 import { TokenProvider } from "../provider/token.provider";
 import {
@@ -50,6 +52,14 @@ export class AuthService {
       throw new BadRequestException(INVALID_AUTH_CREDENTIALS);
     }
 
+    if (!user.isActive) {
+      throw new BadRequestException(USER_NOT_ACTIVE);
+    }
+
+    if (!user.isConfirmed) {
+      throw new BadRequestException(USER_NOT_CONFIRMED_EMAIL);
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -71,8 +81,6 @@ export class AuthService {
 
     const passwordHash = await this.generatePasswordHash(password);
 
-    // TODO: send confirmation email
-    // TODO: otp verification
     const existUser = await this.prismaService.user.findUnique({
       where: {
         email,

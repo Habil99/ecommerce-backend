@@ -17,3 +17,7 @@ export const OTP_EXPIRED = "OTP code expired, please request new one";
 export const INVALID_OTP = "Invalid OTP code, please provide valid one";
 
 export const EMAIL_CONFIRMED = "Email confirmed successfully";
+
+export const USER_NOT_ACTIVE = "Account is not active, please contact support";
+
+export const USER_NOT_CONFIRMED_EMAIL = "Please confirm your email first";
