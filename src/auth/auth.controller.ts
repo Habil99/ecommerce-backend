@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import { SignInDto } from "./dto/sign-in.dto";
 import { AuthService } from "./auth.service";
 import { Public } from "../lib/public-route.decorator";
@@ -15,7 +15,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post("sign-in")
+  @Post("sign-up")
   async signUp(@Body() signUpDto: SignUpDto): Promise<any> {
     return await this.authService.signUp(signUpDto);
   }
