@@ -25,6 +25,14 @@ async function bootstrap() {
     .setDescription("API Documentation for Ecommerce API with NestJS")
     .setVersion("1.0")
     .addTag("ecommerce")
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+      "bearer-auth",
+    )
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("swagger", app, swaggerDocument);

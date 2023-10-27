@@ -1,9 +1,12 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "../service/prisma.service";
 import { UserDto } from "./dto/user.dto";
 import { plainToInstance } from "class-transformer";
 import { USER_NOT_FOUND } from "../lib/error-messages";
-import { RuntimeException } from "@nestjs/core/errors/exceptions";
 
 @Injectable()
 export class UserService {
@@ -36,7 +39,7 @@ export class UserService {
         },
       });
     } catch (e) {
-      throw new RuntimeException(e);
+      throw new InternalServerErrorException(e);
     }
   }
 }

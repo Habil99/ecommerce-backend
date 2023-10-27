@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CloudinaryResponse } from "../model/response.model";
 import { v2 as cloudinary } from "cloudinary";
-import { createReadStream } from "streamifier";
+import * as stream from "stream";
 
 @Injectable()
 export class CloudinaryService {
@@ -14,14 +14,18 @@ export class CloudinaryService {
           }
 
           if (!result) {
-            return reject("Something went wrong with cloudinary");
+            return reject(new Error("Something went wrong with cloudinary"));
           }
 
           resolve(result);
         },
       );
 
-      createReadStream(file.buffer).pipe(uploadStream);
+      if (file.buffer instanceof Buffer && typeof file.buffer === "object") {
+        stream.Readable.from(file.buffer).pipe(uploadStream);
+      } else {
+        return reject(new Error("File buffer is not a buffer"));
+      }
     });
   }
 }

@@ -1,9 +1,12 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from "@nestjs/common";
 import { PrismaService } from "../service/prisma.service";
 import { SignInDto } from "./dto/sign-in.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import * as bcrypt from "bcrypt";
-import { RuntimeException } from "@nestjs/core/errors/exceptions";
 import { JwtService } from "@nestjs/jwt";
 import { UserDto } from "../user/dto/user.dto";
 import { plainToInstance } from "class-transformer";
@@ -153,7 +156,7 @@ export class AuthService {
       const passwordSalt = await bcrypt.genSalt();
       return await bcrypt.hash(password, passwordSalt);
     } catch (e) {
-      throw new RuntimeException(e);
+      throw new InternalServerErrorException(e);
     }
   }
 }

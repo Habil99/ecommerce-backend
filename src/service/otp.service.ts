@@ -1,9 +1,13 @@
-import { BadRequestException, Injectable, Logger } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from "@nestjs/common";
 import { ConfirmationOtp as EmailConfirmationOtpModel } from "@prisma/client";
 import * as crypto from "crypto";
 import { PrismaService } from "./prisma.service";
 import { OTP_EXPIRED } from "../lib/error-messages";
-import { RuntimeException } from "@nestjs/core/errors/exceptions";
 import { Cron } from "@nestjs/schedule";
 
 @Injectable()
@@ -52,7 +56,7 @@ export class OtpService {
         },
       });
     } catch (e) {
-      throw new RuntimeException(e);
+      throw new InternalServerErrorException(e);
     }
   }
 

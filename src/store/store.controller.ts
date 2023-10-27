@@ -2,10 +2,8 @@ import {
   Body,
   Controller,
   Delete,
-  FileTypeValidator,
   Get,
   HttpStatus,
-  MaxFileSizeValidator,
   Param,
   ParseFilePipe,
   Patch,
@@ -16,15 +14,14 @@ import {
 import { StoreService } from "./store.service";
 import { UpdateStoreDto } from "./dto/update-store.dto";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
-import { Public } from "../decorator/public-route.decorator";
 import { CreateStoreDto } from "./dto/create-store.dto";
-import { ApiConsumes } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiConsumes } from "@nestjs/swagger";
 
+@ApiBearerAuth("bearer-auth")
 @Controller("store")
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
-  @Public()
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: "logo", maxCount: 1 },
@@ -45,9 +42,8 @@ export class StoreController {
         ],
       }),
     )
-    files: { logo: Express.Multer.File; banner?: Express.Multer.File },
+    files: { logo: Express.Multer.File[]; banner?: Express.Multer.File[] },
   ) {
-    console.log(files);
     return this.storeService.create(files, createStoreDto);
   }
 

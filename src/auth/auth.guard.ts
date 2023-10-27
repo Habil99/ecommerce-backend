@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      request["user"] = await this.jwtService.verifyAsync(token, {
+      request["user"] = this.jwtService.verify(token, {
         secret: jwtConstants.secret,
       });
     } catch {
