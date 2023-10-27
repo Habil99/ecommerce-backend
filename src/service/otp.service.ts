@@ -56,7 +56,7 @@ export class OtpService {
     }
   }
 
-  @Cron("0 */6 * * * *") // every 6 minutes
+  @Cron("0 */30 * * * *") // every 30 minutes
   handleEmailConfirmationOtpCron() {
     this.prismaService.confirmationOtp
       .deleteMany({

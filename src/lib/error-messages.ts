@@ -21,3 +21,7 @@ export const EMAIL_CONFIRMED = "Email confirmed successfully";
 export const USER_NOT_ACTIVE = "Account is not active, please contact support";
 
 export const USER_NOT_CONFIRMED_EMAIL = "Please confirm your email first";
+
+export const LOGO_NOT_VALID = "Logo is not valid, please provide valid one";
+
+export const BANNER_NOT_VALID = "Banner is not valid, please provide valid one";

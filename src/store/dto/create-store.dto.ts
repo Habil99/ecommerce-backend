@@ -1,33 +1,59 @@
 import {
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsFile } from "../../decorator/class-validation.decorator";
 
 export class CreateStoreDto {
+  @ApiProperty({
+    description: "Name of the store",
+    minLength: 5,
+    required: true,
+    example: "My Store",
+  })
   @IsNotEmpty()
   @MinLength(5)
   name: string;
 
-  @IsNumber()
+  @ApiProperty({
+    description: "Country id of the store",
+    required: true,
+    example: 1,
+  })
+  @IsString()
   countryId: number;
 
-  @IsNumber()
+  @ApiProperty({
+    description: "City id of the store",
+    required: true,
+    example: 1,
+  })
+  @IsString()
   cityId: number;
 
+  @ApiProperty({
+    description: "Address of the store",
+    minLength: 10,
+    maxLength: 300,
+    required: true,
+    example: "My Store Address",
+  })
   @IsNotEmpty()
   @MinLength(10)
   @MaxLength(300)
   address: string;
 
+  @ApiProperty({ type: "string", format: "binary", required: true })
   @IsOptional()
-  @IsString()
+  @IsFile("Logo")
   logo: string;
 
+  @ApiProperty({ type: "string", format: "binary", required: false })
   @IsOptional()
-  @IsString()
+  @IsFile("Banner")
   banner?: string;
 }
