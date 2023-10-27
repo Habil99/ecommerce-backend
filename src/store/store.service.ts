@@ -8,7 +8,8 @@ export class StoreService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createStoreDto: CreateStoreDto) {
-    const { name } = createStoreDto;
+    const { name, address, logo, banner, cityId, countryId } = createStoreDto;
+
     // const store = await this.prismaService.sto
     return "This action adds a new store";
   }

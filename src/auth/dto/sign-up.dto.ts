@@ -36,7 +36,6 @@ export class SignUpDto {
   @ApiProperty({
     example: "Password123!",
   })
-  @IsString()
   @IsStrongPassword({
     minLength: 8,
   })

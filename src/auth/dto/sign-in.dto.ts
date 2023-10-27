@@ -10,15 +10,12 @@ export class SignInDto {
   @ApiProperty({
     example: "johndoe02@gmail.com",
   })
-  @IsNotEmpty()
-  @IsString()
   @IsEmail()
   email: string;
 
   @ApiProperty({
     example: "Password123!",
   })
-  @IsString()
   @IsStrongPassword({
     minLength: 8,
   })
