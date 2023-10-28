@@ -17,6 +17,7 @@ import { UpdateStoreDto } from "./dto/update-store.dto";
 import { FileFieldsInterceptor } from "@nestjs/platform-express";
 import { CreateStoreDto } from "./dto/create-store.dto";
 import { ApiBearerAuth, ApiConsumes } from "@nestjs/swagger";
+import { StoreDto } from "./dto/store.dto";
 
 @ApiBearerAuth("bearer-auth")
 @Controller("stores")
@@ -44,27 +45,30 @@ export class StoreController {
       }),
     )
     files: { logo: Express.Multer.File[]; banner?: Express.Multer.File[] },
-  ) {
+  ): Promise<StoreDto> {
     return this.storeService.create(files, createStoreDto);
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<StoreDto[]> {
     return this.storeService.findAll();
   }
 
   @Get(":id")
-  findOne(@Param("id", ParseIntPipe) id: number) {
+  findOne(@Param("id", ParseIntPipe) id: number): Promise<StoreDto> {
     return this.storeService.findOne(id);
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateStoreDto: UpdateStoreDto) {
-    return this.storeService.update(+id, updateStoreDto);
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() updateStoreDto: UpdateStoreDto,
+  ) {
+    return this.storeService.update(id, updateStoreDto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.storeService.remove(+id);
+  remove(@Param("id", ParseIntPipe) id: number): Promise<StoreDto> {
+    return this.storeService.remove(id);
   }
 }

@@ -25,7 +25,7 @@ export class StoreService {
   async create(
     files: { logo: Express.Multer.File[]; banner?: Express.Multer.File[] },
     createStoreDto: CreateStoreDto,
-  ) {
+  ): Promise<StoreDto> {
     const { name, address, cityId, countryId } = createStoreDto;
     const { logo, banner } = files;
 
@@ -66,7 +66,7 @@ export class StoreService {
     return plainToInstance(StoreDto, store);
   }
 
-  async findAll() {
+  async findAll(): Promise<StoreDto[]> {
     const stores = await this.prismaService.store.findMany({
       where: {
         userId: this.request.user.id,
@@ -76,7 +76,7 @@ export class StoreService {
     return plainToInstance(StoreDto, stores);
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<StoreDto> {
     const store = await this.prismaService.store.findUnique({
       where: {
         id,
@@ -92,10 +92,17 @@ export class StoreService {
   }
 
   update(id: number, updateStoreDto: UpdateStoreDto) {
-    return `This action updates a #${id} store`;
+    // TODO: implement update store
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} store`;
+  async remove(id: number): Promise<StoreDto> {
+    const deletedStore = await this.prismaService.store.delete({
+      where: {
+        id,
+        userId: this.request.user.id,
+      },
+    });
+
+    return plainToInstance(StoreDto, deletedStore);
   }
 }
