@@ -5,6 +5,13 @@ import { prismaClientQueryEngineErrorCodesMap } from "../static/primsa-client-qu
 import { getReasonPhrase } from "http-status-codes";
 import { Prisma } from "@prisma/client";
 
+const createResponseFactory = (statusCode: number) => (message: string) => ({
+  statusCode,
+  error: getReasonPhrase(statusCode),
+  message,
+  timestamp: new Date().toISOString(),
+});
+
 @Catch()
 export class GlobalExceptionFilter extends BaseExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
@@ -23,23 +30,15 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
         prismaClientQueryEngineErrorCodesMap[exceptionCode] ??
         HttpStatus.INTERNAL_SERVER_ERROR;
 
-      response.status(statusCode).json({
-        statusCode,
-        error: getReasonPhrase(statusCode), // this is hacky, because I don`t know what type to use for HttpErrorByCode
-        message,
-        path,
-        timestamp: new Date().toISOString(),
-      });
+      response
+        .status(statusCode)
+        .json(createResponseFactory(statusCode)(message));
     }
 
     const statusCode = exception.code ?? HttpStatus.INTERNAL_SERVER_ERROR;
 
-    response.status(statusCode).json({
-      statusCode,
-      error: getReasonPhrase(statusCode),
-      message: exception.message,
-      path,
-      timestamp: new Date().toISOString(),
-    });
+    response
+      .status(statusCode)
+      .json(createResponseFactory(statusCode)(exception.message));
   }
 }
