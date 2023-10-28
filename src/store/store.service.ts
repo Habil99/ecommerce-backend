@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from "@nestjs/common";
 import { CreateStoreDto } from "./dto/create-store.dto";
 import { UpdateStoreDto } from "./dto/update-store.dto";
@@ -11,6 +12,7 @@ import { SessionRequest } from "../model/request.model";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { plainToInstance } from "class-transformer";
 import { StoreDto } from "./dto/store.dto";
+import { ENTITY_NOT_FOUND } from "../lib/error-messages";
 
 @Injectable()
 export class StoreService {
@@ -74,8 +76,19 @@ export class StoreService {
     return plainToInstance(StoreDto, stores);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} store`;
+  async findOne(id: number) {
+    const store = await this.prismaService.store.findUnique({
+      where: {
+        id,
+        userId: this.request.user.id,
+      },
+    });
+
+    if (!store) {
+      throw new NotFoundException(ENTITY_NOT_FOUND("Store", "id"));
+    }
+
+    return plainToInstance(StoreDto, store);
   }
 
   update(id: number, updateStoreDto: UpdateStoreDto) {

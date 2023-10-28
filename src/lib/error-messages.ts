@@ -32,3 +32,6 @@ export const INVALID_REFRESH_TOKEN =
   "Invalid refresh token, please provide valid one";
 
 export const UNAUTHORIZED_CLIENT = "Please login to access this resource";
+
+export const ENTITY_NOT_FOUND = (entityName: string, value: any) =>
+  `${entityName} not found with provided ${value}`;

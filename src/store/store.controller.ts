@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   ParseFilePipe,
+  ParseIntPipe,
   Patch,
   Post,
   UploadedFiles,
@@ -30,7 +31,7 @@ export class StoreController {
   )
   @ApiConsumes("multipart/form-data")
   @Post()
-  async create(
+  create(
     @Body() createStoreDto: CreateStoreDto,
     @UploadedFiles(
       new ParseFilePipe({
@@ -48,13 +49,13 @@ export class StoreController {
   }
 
   @Get()
-  async findAll() {
-    return await this.storeService.findAll();
+  findAll() {
+    return this.storeService.findAll();
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.storeService.findOne(+id);
+  findOne(@Param("id", ParseIntPipe) id: number) {
+    return this.storeService.findOne(id);
   }
 
   @Patch(":id")
