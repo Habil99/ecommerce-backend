@@ -49,23 +49,23 @@ export class StoreService {
       }
     }
 
-    try {
-      const store = await this.prismaService.store.create({
-        data: {
-          name,
-          address,
-          countryId: +countryId,
-          cityId: +cityId,
-          logo: logoUrl as string,
-          userId: this.request.user.id,
-          ...(banner && { banner: bannerUrl }),
-        },
-      });
+    // try {
+    const store = await this.prismaService.store.create({
+      data: {
+        name,
+        address,
+        countryId,
+        cityId: +cityId,
+        logo: logoUrl as string,
+        userId: this.request.user.id,
+        ...(banner && { banner: bannerUrl }),
+      },
+    });
 
-      return plainToInstance(StoreDto, store);
-    } catch (e) {
-      throw new InternalServerErrorException(e.message);
-    }
+    return plainToInstance(StoreDto, store);
+    // } catch (e) {
+    //   throw new InternalServerErrorException(e.message);
+    // }
   }
 
   findAll() {

@@ -1,10 +1,12 @@
-import { NestFactory } from "@nestjs/core";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { HttpStatus, ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { PrismaClientExceptionFilter } from "./exception/prisma-client-.exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const { httpAdapter } = app.get(HttpAdapterHost);
 
   app.setGlobalPrefix("api/v1");
   app.useGlobalPipes(
@@ -14,6 +16,7 @@ async function bootstrap() {
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
     }),
   );
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
   app.enableShutdownHooks();
   app.enableCors({
     origin: "*",
