@@ -8,12 +8,14 @@ import {
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { GlobalExceptionFilter } from "./exception/global-exception.filter";
 import { getReasonPhrase } from "http-status-codes";
+import { ResponseMappingInterceptor } from "./interceptor/response-mapping.interceptor";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const { httpAdapter } = app.get(HttpAdapterHost);
 
   app.setGlobalPrefix("api/v1");
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -36,8 +38,13 @@ async function bootstrap() {
       },
     }),
   );
+
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapter));
+
+  app.useGlobalInterceptors(new ResponseMappingInterceptor());
+
   app.enableShutdownHooks();
+
   app.enableCors({
     origin: "*",
     credentials: true,
@@ -57,7 +64,9 @@ async function bootstrap() {
       "bearer-auth",
     )
     .build();
+
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+
   SwaggerModule.setup("swagger", app, swaggerDocument);
 
   await app.listen(3000);
