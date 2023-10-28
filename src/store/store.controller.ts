@@ -18,7 +18,7 @@ import { CreateStoreDto } from "./dto/create-store.dto";
 import { ApiBearerAuth, ApiConsumes } from "@nestjs/swagger";
 
 @ApiBearerAuth("bearer-auth")
-@Controller("store")
+@Controller("stores")
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
@@ -48,8 +48,8 @@ export class StoreController {
   }
 
   @Get()
-  findAll() {
-    return this.storeService.findAll();
+  async findAll() {
+    return await this.storeService.findAll();
   }
 
   @Get(":id")

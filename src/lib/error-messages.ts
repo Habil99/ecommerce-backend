@@ -30,3 +30,5 @@ export const REQUIRED_REFRESH_TOKEN = "Refresh token is required";
 
 export const INVALID_REFRESH_TOKEN =
   "Invalid refresh token, please provide valid one";
+
+export const UNAUTHORIZED_CLIENT = "Please login to access this resource";

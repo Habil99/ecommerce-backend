@@ -49,12 +49,11 @@ export class StoreService {
       }
     }
 
-    // try {
     const store = await this.prismaService.store.create({
       data: {
         name,
         address,
-        countryId,
+        countryId: +countryId,
         cityId: +cityId,
         logo: logoUrl as string,
         userId: this.request.user.id,
@@ -63,13 +62,16 @@ export class StoreService {
     });
 
     return plainToInstance(StoreDto, store);
-    // } catch (e) {
-    //   throw new InternalServerErrorException(e.message);
-    // }
   }
 
-  findAll() {
-    return `This action returns all store`;
+  async findAll() {
+    const stores = await this.prismaService.store.findMany({
+      where: {
+        userId: this.request.user.id,
+      },
+    });
+
+    return plainToInstance(StoreDto, stores);
   }
 
   findOne(id: number) {

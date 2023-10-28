@@ -1,16 +1,23 @@
-import { ArgumentsHost, Catch, HttpStatus } from "@nestjs/common";
+import {
+  ArgumentsHost,
+  Catch,
+  HttpException,
+  HttpStatus,
+} from "@nestjs/common";
 import { BaseExceptionFilter } from "@nestjs/core";
 import { Response } from "express";
 import { prismaClientQueryEngineErrorCodesMap } from "../static/primsa-client-query-engine";
 import { getReasonPhrase } from "http-status-codes";
 import { Prisma } from "@prisma/client";
 
-const createResponseFactory = (statusCode: number) => (message: string) => ({
-  statusCode,
-  error: getReasonPhrase(statusCode),
-  message,
-  timestamp: new Date().toISOString(),
-});
+const createResponseFactory =
+  (statusCode: number) => (message: string, path: string) => ({
+    statusCode,
+    error: getReasonPhrase(statusCode),
+    message,
+    path,
+    timestamp: new Date().toISOString(),
+  });
 
 @Catch()
 export class GlobalExceptionFilter extends BaseExceptionFilter {
@@ -20,7 +27,7 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
     const request = context.getRequest<Request>();
 
     const path = request.url;
-
+    console.log(exception);
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       const message = exception.message.replaceAll(/\n/g, "");
       const exceptionCode =
@@ -32,13 +39,21 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
 
       response
         .status(statusCode)
-        .json(createResponseFactory(statusCode)(message));
+        .json(createResponseFactory(statusCode)(message, path));
+    } else {
+      let statusCode =
+        exception.statusCode ??
+        exception.code ??
+        HttpStatus.INTERNAL_SERVER_ERROR;
+
+      if (exception instanceof HttpException) {
+        statusCode = exception.getStatus();
+      }
+
+      const exceptionMessage = exception.response?.message ?? exception.message;
+      response
+        .status(statusCode)
+        .json(createResponseFactory(statusCode)(exceptionMessage, path));
     }
-
-    const statusCode = exception.code ?? HttpStatus.INTERNAL_SERVER_ERROR;
-
-    response
-      .status(statusCode)
-      .json(createResponseFactory(statusCode)(exception.message));
   }
 }

@@ -1,8 +1,13 @@
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { HttpStatus, ValidationPipe } from "@nestjs/common";
+import {
+  HttpStatus,
+  UnprocessableEntityException,
+  ValidationPipe,
+} from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { GlobalExceptionFilter } from "./exception/global-exception.filter";
+import { getReasonPhrase } from "http-status-codes";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,6 +19,21 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      exceptionFactory: (errors) => {
+        return new UnprocessableEntityException({
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          error: getReasonPhrase(HttpStatus.UNPROCESSABLE_ENTITY),
+          message: errors.reduce(
+            (acc, e) => ({
+              ...acc,
+              [e.property]: Object.values(
+                e.constraints as Record<string, string>,
+              ),
+            }),
+            {},
+          ),
+        });
+      },
     }),
   );
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapter));
