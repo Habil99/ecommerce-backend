@@ -46,21 +46,62 @@ model ResetPasswordOtp {
 }
 
 model Store {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique @map("user_id")
-  name      String   @unique
-  address   String   @unique
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique @map("user_id")
+  name      String    @unique
+  address   String    @unique
   logo      String
   banner    String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  cityId    Int      @map("city_id")
-  countryId Int      @map("country_id")
-  city      City     @relation(fields: [cityId], references: [id])
-  country   Country  @relation(fields: [countryId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  cityId    Int       @map("city_id")
+  countryId Int       @map("country_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  city      City      @relation(fields: [cityId], references: [id])
+  country   Country   @relation(fields: [countryId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+  Product   Product[]
 
   @@map("stores")
+}
+
+model Color {
+  id        Int       @id @default(autoincrement())
+  name      String
+  value     String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  Product   Product[]
+
+  @@map("colors")
+}
+
+model Size {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  Product   Product[]
+
+  @@map("sizes")
+}
+
+model Product {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String
+  price         Decimal  @db.Decimal(8, 2)
+  stockQuantity Int?     @default(1) @map("stock_quantity")
+  discount      Decimal? @default(0) @db.Decimal(5, 2)
+  storeId       Int      @map("store_id")
+  colorId       Int      @map("color_id")
+  sizeId        Int      @map("size_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  store         Store    @relation(fields: [storeId], references: [id])
+  color         Color    @relation(fields: [colorId], references: [id])
+  size          Size     @relation(fields: [sizeId], references: [id])
+
+  @@map("products")
 }
 
 model Country {

@@ -7,6 +7,8 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { StoreModule } from "./store/store.module";
 import { CloudinaryModule } from "./cloudinary/cloudinary.module";
 import { CountryModule } from "./country/country.module";
+import { ColorModule } from './settings/color/color.module';
+import { SizeModule } from './settings/size/size.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { CountryModule } from "./country/country.module";
     StoreModule,
     CloudinaryModule,
     CountryModule,
+    ColorModule,
+    SizeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
