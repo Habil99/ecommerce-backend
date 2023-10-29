@@ -4,26 +4,26 @@ import { PrismaService } from "../service/prisma.service";
 export abstract class GenericResourceService<TModel> {
   protected constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: TModel) {
+  create(data: TModel) {
     return this.prisma[this.getEntityName()].create({ data });
   }
 
-  async findAll() {
+  findAll() {
     return this.prisma[this.getEntityName()].findMany();
   }
 
-  async findOne(id: number) {
+  findOne(id: number) {
     return this.prisma[this.getEntityName()].findUnique({ where: { id } });
   }
 
-  async update(id: number, data: TModel) {
+  update(id: number, data: TModel) {
     return this.prisma[this.getEntityName()].update({
       where: { id },
       data,
     });
   }
 
-  async remove(id: number) {
+  remove(id: number) {
     return this.prisma[this.getEntityName()].delete({ where: { id } });
   }
 
