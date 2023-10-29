@@ -1,22 +1,22 @@
 // @ts-nocheck
 import { PrismaService } from "../service/prisma.service";
 
-export abstract class GenericResourceService<TModel> {
+export abstract class GenericResourceService<TCreateDto, TUpdateDto, TDto> {
   protected constructor(private readonly prisma: PrismaService) {}
 
-  create(data: TModel) {
+  create(data: TCreateDto) {
     return this.prisma[this.getEntityName()].create({ data });
   }
 
-  findAll() {
+  findAll(): Promise<TDto[]> {
     return this.prisma[this.getEntityName()].findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<TDto | null> {
     return this.prisma[this.getEntityName()].findUnique({ where: { id } });
   }
 
-  update(id: number, data: TModel) {
+  update(id: number, data: TUpdateDto) {
     return this.prisma[this.getEntityName()].update({
       where: { id },
       data,

@@ -1,19 +1,25 @@
 import {
-  Get,
-  Post,
-  Param,
   Body,
-  Put,
   Delete,
+  Get,
+  Param,
   ParseIntPipe,
+  Post,
+  Put,
 } from "@nestjs/common";
 import { GenericResourceService } from "./generic-resource.service";
 
-export class GenericResourceController<T> {
-  constructor(private readonly service: GenericResourceService<T>) {}
+export class GenericResourceController<TCreateDto, TUpdateDto, TDto> {
+  constructor(
+    private readonly service: GenericResourceService<
+      TCreateDto,
+      TUpdateDto,
+      TDto
+    >,
+  ) {}
 
   @Post()
-  create(@Body() data: T) {
+  create(@Body() data: TCreateDto) {
     return this.service.create(data);
   }
 
@@ -28,7 +34,7 @@ export class GenericResourceController<T> {
   }
 
   @Put(":id")
-  update(@Param("id", ParseIntPipe) id: number, @Body() data: T) {
+  update(@Param("id", ParseIntPipe) id: number, @Body() data: TUpdateDto) {
     return this.service.update(id, data);
   }
 
