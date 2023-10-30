@@ -97,7 +97,6 @@ model Product {
   name                   String
   description            String
   price                  Decimal                  @db.Decimal(8, 2)
-  stockQuantity          Int?                     @default(1) @map("stock_quantity")
   discount               Decimal?                 @default(0) @db.Decimal(5, 2)
   storeId                Int                      @map("store_id")
   ProductImage           ProductImage[]
