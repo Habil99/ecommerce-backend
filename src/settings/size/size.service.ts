@@ -1,21 +1,33 @@
 import { Injectable } from "@nestjs/common";
-import { GenericResourceService } from "../../generic-resource/generic-resource.service";
-import { CreateSizeDto } from "./dto/create-size.dto";
-import { UpdateSizeDto } from "./dto/update-size.dto";
-import { SizeDto } from "./dto/size.dto";
 import { PrismaService } from "../../service/prisma.service";
+import { CreateSizeDto } from "./dto/create-size.dto";
+import { SizeDto } from "./dto/size.dto";
+import { UpdateSizeDto } from "./dto/update-size.dto";
 
 @Injectable()
-export class SizeService extends GenericResourceService<
-  CreateSizeDto,
-  UpdateSizeDto,
-  SizeDto
-> {
-  constructor(protected readonly prismaService: PrismaService) {
-    super(prismaService);
+export class SizeService {
+  constructor(private readonly prismaService: PrismaService) {}
+
+  create(data: CreateSizeDto) {
+    return this.prismaService.size.create({ data });
   }
 
-  protected getEntityName(): any {
-    return "color";
+  findAll(): Promise<SizeDto[]> {
+    return this.prismaService.size.findMany();
+  }
+
+  findOne(id: number): Promise<SizeDto | null> {
+    return this.prismaService.size.findUnique({ where: { id } });
+  }
+
+  update(id: number, data: UpdateSizeDto) {
+    return this.prismaService.size.update({
+      where: { id },
+      data,
+    });
+  }
+
+  remove(id: number) {
+    return this.prismaService.size.delete({ where: { id } });
   }
 }
