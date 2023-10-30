@@ -10,6 +10,7 @@ import { CountryModule } from "./country/country.module";
 import { ColorModule } from './settings/color/color.module';
 import { SizeModule } from './settings/size/size.module';
 import { ProductModule } from './product/product.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ProductModule } from './product/product.module';
     ColorModule,
     SizeModule,
     ProductModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

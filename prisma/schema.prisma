@@ -104,6 +104,8 @@ model Product {
   updatedAt              DateTime                 @updatedAt @map("updated_at")
   store                  Store                    @relation(fields: [storeId], references: [id])
   ColorsOnSizesOnProduct ColorsOnSizesOnProduct[]
+  Category               Category?                @relation(fields: [categoryId], references: [id])
+  categoryId             Int?
 
   @@map("products")
 }
@@ -132,6 +134,17 @@ model ColorsOnSizesOnProduct {
   size          Size     @relation(fields: [sizeId], references: [id])
 
   @@map("colors_on_sizes_on_products")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  parentId  Int?      @map("parent_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  Product   Product[]
+
+  @@map("categories")
 }
 
 model Country {
