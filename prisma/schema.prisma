@@ -56,9 +56,9 @@ model Store {
   countryId Int       @map("country_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
-  city      City      @relation(fields: [cityId], references: [id], onUpdate: Cascade)
-  country   Country   @relation(fields: [countryId], references: [id], onUpdate: Cascade)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  city      City      @relation(fields: [cityId], references: [id])
+  country   Country   @relation(fields: [countryId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
   Product   Product[]
 
   @@map("stores")
@@ -70,7 +70,6 @@ model Color {
   value                  String
   createdAt              DateTime                 @default(now()) @map("created_at")
   updatedAt              DateTime                 @updatedAt @map("updated_at")
-  ColorsOnProduct        ColorsOnProduct[]
   ColorsOnSizesOnProduct ColorsOnSizesOnProduct[]
 
   @@map("colors")
@@ -81,7 +80,6 @@ model Size {
   name                   String
   createdAt              DateTime                 @default(now()) @map("created_at")
   updatedAt              DateTime                 @updatedAt @map("updated_at")
-  SizesOnProduct         SizesOnProduct[]
   ColorsOnSizesOnProduct ColorsOnSizesOnProduct[]
 
   @@map("sizes")
@@ -98,9 +96,7 @@ model Product {
   ProductImage           ProductImage[]
   createdAt              DateTime                 @default(now()) @map("created_at")
   updatedAt              DateTime                 @updatedAt @map("updated_at")
-  store                  Store                    @relation(fields: [storeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ColorsOnProduct        ColorsOnProduct[]
-  SizesOnProduct         SizesOnProduct[]
+  store                  Store                    @relation(fields: [storeId], references: [id])
   ColorsOnSizesOnProduct ColorsOnSizesOnProduct[]
 
   @@map("products")
@@ -117,30 +113,6 @@ model ProductImage {
   @@map("product_images")
 }
 
-model ColorsOnProduct {
-  id        Int      @id @default(autoincrement())
-  productId Int      @map("product_id")
-  colorId   Int      @map("color_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  color     Color    @relation(fields: [colorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("colors_on_products")
-}
-
-model SizesOnProduct {
-  id        Int      @id @default(autoincrement())
-  productId Int      @map("product_id")
-  sizeId    Int      @map("size_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  size      Size     @relation(fields: [sizeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("sizes_on_products")
-}
-
 model ColorsOnSizesOnProduct {
   id            Int      @id @default(autoincrement())
   productId     Int      @map("product_id")
@@ -149,9 +121,9 @@ model ColorsOnSizesOnProduct {
   stockQuantity Int?     @default(1) @map("stock_quantity")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  color         Color    @relation(fields: [colorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  size          Size     @relation(fields: [sizeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product       Product  @relation(fields: [productId], references: [id])
+  color         Color    @relation(fields: [colorId], references: [id])
+  size          Size     @relation(fields: [sizeId], references: [id])
 
   @@map("colors_on_sizes_on_products")
 }
