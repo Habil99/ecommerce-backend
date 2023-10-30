@@ -9,6 +9,7 @@ import { CloudinaryModule } from "./cloudinary/cloudinary.module";
 import { CountryModule } from "./country/country.module";
 import { ColorModule } from './settings/color/color.module';
 import { SizeModule } from './settings/size/size.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SizeModule } from './settings/size/size.module';
     CountryModule,
     ColorModule,
     SizeModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
