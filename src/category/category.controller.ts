@@ -17,7 +17,7 @@ import { RoleGuard } from "../role/role.guard";
 import { Role } from "@prisma/client";
 import { Roles } from "../role/role.decorator";
 
-@Controller("category")
+@Controller("categories")
 @ApiBearerAuth("bearer-auth")
 @UseGuards(RoleGuard)
 export class CategoryController {
