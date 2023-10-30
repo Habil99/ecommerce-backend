@@ -21,10 +21,9 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
       prismaClientQueryEngineErrorCodesMap[exceptionCode] ??
       HttpStatus.INTERNAL_SERVER_ERROR;
 
-    console.error(exception.message);
     response.status(statusCode).json({
       statusCode,
-      error: getReasonPhrase(statusCode), // this is hacky, because I don`t know what type to use for HttpErrorByCode
+      error: getReasonPhrase(statusCode),
       message,
       path,
       timestamp: new Date().toISOString(),
