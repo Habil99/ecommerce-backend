@@ -1,13 +1,14 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../service/prisma.service";
 import { SignInDto } from "./dto/sign-in.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import * as bcrypt from "bcrypt";
-import { JwtService } from "@nestjs/jwt";
 import { UserDto } from "../user/dto/user.dto";
 import { plainToInstance } from "class-transformer";
 import { UserService } from "../user/user.service";
@@ -15,11 +16,14 @@ import {
   EMAIL_CONFIRMED,
   INVALID_AUTH_CREDENTIALS,
   INVALID_OTP,
+  INVALID_REFRESH_TOKEN,
   INVALID_TOKEN,
   OTP_NOT_FOUND,
+  REQUIRED_REFRESH_TOKEN,
   USER_ALREADY_EXISTS,
   USER_NOT_ACTIVE,
   USER_NOT_CONFIRMED_EMAIL,
+  USER_NOT_FOUND,
 } from "../lib/error-messages";
 import { TokenProvider } from "../provider/token.provider";
 import {
@@ -30,13 +34,14 @@ import {
 import { MailService } from "../service/mail.service";
 import { OtpService } from "../service/otp.service";
 import { EmailConfirmationDto } from "./dto/email-confirmation.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly jwtService: JwtService,
     private readonly tokenProvider: TokenProvider,
     private readonly mailService: MailService,
     private readonly otpService: OtpService,
@@ -149,6 +154,31 @@ export class AuthService {
       success: true,
       message: EMAIL_CONFIRMED,
     };
+  }
+
+  async refresh(refreshToken: string) {
+    const { id: userId } = this.jwtService.verify(refreshToken);
+
+    if (!userId) {
+      return new ForbiddenException(INVALID_REFRESH_TOKEN);
+    }
+
+    try {
+      const user = await this.prismaService.user.findUniqueOrThrow({
+        where: {
+          id: userId,
+        },
+      });
+
+      const tokens = this.tokenProvider.generateTokens(user);
+
+      return {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      };
+    } catch (e) {
+      throw new NotFoundException(USER_NOT_FOUND("token"));
+    }
   }
 
   async generatePasswordHash(password: string): Promise<string> {

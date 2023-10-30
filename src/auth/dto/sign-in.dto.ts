@@ -8,13 +8,13 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class SignInDto {
   @ApiProperty({
-    example: "johndoe02@gmail.com",
+    example: "abiyevhabil3@gmail.com",
   })
   @IsEmail()
   email: string;
 
   @ApiProperty({
-    example: "Password123!",
+    example: "Habil1410.",
   })
   @IsStrongPassword({
     minLength: 8,

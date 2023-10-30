@@ -25,3 +25,13 @@ export const USER_NOT_CONFIRMED_EMAIL = "Please confirm your email first";
 export const LOGO_NOT_VALID = "Logo is not valid, please provide valid one";
 
 export const BANNER_NOT_VALID = "Banner is not valid, please provide valid one";
+
+export const REQUIRED_REFRESH_TOKEN = "Refresh token is required";
+
+export const INVALID_REFRESH_TOKEN =
+  "Invalid refresh token, please provide valid one";
+
+export const UNAUTHORIZED_CLIENT = "Please login to access this resource";
+
+export const ENTITY_NOT_FOUND = (entityName: string, value: any) =>
+  `${entityName} not found with provided ${value}`;

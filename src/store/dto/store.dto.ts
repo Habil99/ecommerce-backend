@@ -1,4 +1,5 @@
 import {
+  IsDate,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -6,34 +7,28 @@ import {
   MinLength,
 } from "class-validator";
 import { IsFile } from "../../decorator/class-validation.decorator";
-import { Expose } from "class-transformer";
+import { AbstractDto } from "../../lib/abstract-dto";
 
-export class StoreDto {
-  @Expose()
+export class StoreDto extends AbstractDto {
   @IsNotEmpty()
   @MinLength(5)
   name: string;
 
-  @Expose()
   @IsString()
   countryId: number;
 
-  @Expose()
   @IsString()
   cityId: number;
 
-  @Expose()
   @IsNotEmpty()
   @MinLength(10)
   @MaxLength(300)
   address: string;
 
-  @Expose()
   @IsOptional()
   @IsFile("Logo")
   logo: string;
 
-  @Expose()
   @IsOptional()
   @IsFile("Banner")
   banner?: string;

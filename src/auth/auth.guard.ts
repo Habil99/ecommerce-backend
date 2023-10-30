@@ -9,6 +9,7 @@ import { Request } from "express";
 import { jwtConstants } from "./constants";
 import { Reflector } from "@nestjs/core";
 import { IS_PUBLIC_KEY } from "../decorator/public-route.decorator";
+import { UNAUTHORIZED_CLIENT } from "../lib/error-messages";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -29,7 +30,7 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(UNAUTHORIZED_CLIENT);
     }
 
     try {
@@ -37,7 +38,7 @@ export class AuthGuard implements CanActivate {
         secret: jwtConstants.secret,
       });
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(UNAUTHORIZED_CLIENT);
     }
 
     return true;

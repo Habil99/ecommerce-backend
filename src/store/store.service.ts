@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from "@nestjs/common";
 import { CreateStoreDto } from "./dto/create-store.dto";
 import { UpdateStoreDto } from "./dto/update-store.dto";
@@ -11,6 +12,7 @@ import { SessionRequest } from "../model/request.model";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { plainToInstance } from "class-transformer";
 import { StoreDto } from "./dto/store.dto";
+import { ENTITY_NOT_FOUND } from "../lib/error-messages";
 
 @Injectable()
 export class StoreService {
@@ -23,7 +25,7 @@ export class StoreService {
   async create(
     files: { logo: Express.Multer.File[]; banner?: Express.Multer.File[] },
     createStoreDto: CreateStoreDto,
-  ) {
+  ): Promise<StoreDto> {
     const { name, address, cityId, countryId } = createStoreDto;
     const { logo, banner } = files;
 
@@ -49,12 +51,11 @@ export class StoreService {
       }
     }
 
-    // try {
     const store = await this.prismaService.store.create({
       data: {
         name,
         address,
-        countryId,
+        countryId: +countryId,
         cityId: +cityId,
         logo: logoUrl as string,
         userId: this.request.user.id,
@@ -63,24 +64,45 @@ export class StoreService {
     });
 
     return plainToInstance(StoreDto, store);
-    // } catch (e) {
-    //   throw new InternalServerErrorException(e.message);
-    // }
   }
 
-  findAll() {
-    return `This action returns all store`;
+  async findAll(): Promise<StoreDto[]> {
+    const stores = await this.prismaService.store.findMany({
+      where: {
+        userId: this.request.user.id,
+      },
+    });
+
+    return plainToInstance(StoreDto, stores);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} store`;
+  async findOne(id: number): Promise<StoreDto> {
+    const store = await this.prismaService.store.findUnique({
+      where: {
+        id,
+        userId: this.request.user.id,
+      },
+    });
+
+    if (!store) {
+      throw new NotFoundException(ENTITY_NOT_FOUND("Store", "id"));
+    }
+
+    return plainToInstance(StoreDto, store);
   }
 
   update(id: number, updateStoreDto: UpdateStoreDto) {
-    return `This action updates a #${id} store`;
+    // TODO: implement update store
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} store`;
+  async remove(id: number): Promise<StoreDto> {
+    const deletedStore = await this.prismaService.store.delete({
+      where: {
+        id,
+        userId: this.request.user.id,
+      },
+    });
+
+    return plainToInstance(StoreDto, deletedStore);
   }
 }
