@@ -6,7 +6,7 @@ import { UpdateSizeDto } from "./dto/update-size.dto";
 import { SizeDto } from "./dto/size.dto";
 import { ApiBearerAuth } from "@nestjs/swagger";
 
-@Controller("sizes")
+@Controller("settings/sizes")
 @ApiBearerAuth("bearer-auth")
 export class SizeController extends GenericResourceController<
   CreateSizeDto,

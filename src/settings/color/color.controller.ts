@@ -6,7 +6,7 @@ import { CreateColorDto } from "./dto/create-color.dto";
 import { UpdateColorDto } from "./dto/update-color.dto";
 import { ColorDto } from "./dto/color.dto";
 
-@Controller("colors")
+@Controller("settings/colors")
 @ApiBearerAuth("bearer-auth")
 export class ColorController extends GenericResourceController<
   CreateColorDto,
