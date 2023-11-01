@@ -19,7 +19,6 @@ import {
   INVALID_REFRESH_TOKEN,
   INVALID_TOKEN,
   OTP_NOT_FOUND,
-  REQUIRED_REFRESH_TOKEN,
   USER_ALREADY_EXISTS,
   USER_NOT_ACTIVE,
   USER_NOT_CONFIRMED_EMAIL,
@@ -111,9 +110,11 @@ export class AuthService {
 
       const emailToken = this.tokenProvider.signEmailToken(user.id);
 
-      await this.mailService.sendUserConfirmation(user, emailToken);
+      const { otpCode } = await this.otpService.createEmailConfirmationOtp(
+        user.id,
+      );
 
-      await this.otpService.createEmailConfirmationOtp(user.id);
+      await this.mailService.sendUserConfirmation(user, emailToken, otpCode);
 
       return plainToInstance(UserDto, user);
     } catch (e) {

@@ -45,11 +45,12 @@ export class MailService {
     return handlebars.compile(templateSource);
   }
 
-  async sendUserConfirmation(user: UserDto, token: string) {
+  async sendUserConfirmation(user: UserDto, token: string, otp: number) {
     const url = `${process.env.CLIENT_URL}/auth/confirm-email?token=${token}`;
     const html = this.confirmationTemplate({
       name: user.firstName,
       url,
+      otp,
     });
 
     await this.transporter.sendMail({

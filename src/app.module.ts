@@ -7,11 +7,21 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { StoreModule } from "./store/store.module";
 import { CloudinaryModule } from "./cloudinary/cloudinary.module";
 import { CountryModule } from "./country/country.module";
-import { ColorModule } from './settings/color/color.module';
-import { SizeModule } from './settings/size/size.module';
+import { ColorModule } from "./settings/color/color.module";
+import { SizeModule } from "./settings/size/size.module";
+import { JwtModule } from "@nestjs/jwt";
+import { jwtConstants } from "./auth/constants";
 
 @Module({
   imports: [
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: {
+        algorithm: "HS256",
+        expiresIn: jwtConstants.expiresIn,
+      },
+    }),
     AuthModule,
     UserModule,
     ScheduleModule.forRoot(),
