@@ -7,12 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  SELLER
+  CUSTOMER
+}
+
 model User {
   id               Int               @id @default(autoincrement())
   firstName        String            @map("first_name")
   lastName         String            @map("last_name")
   email            String            @unique
   password         String
+  role             Role              @default(CUSTOMER)
   isActive         Boolean?          @default(false) @map("is_active")
   isConfirmed      Boolean?          @default(false) @map("is_confirmed")
   isDeleted        Boolean?          @default(false) @map("is_deleted")
@@ -49,6 +56,7 @@ model Store {
   id        Int       @id @default(autoincrement())
   userId    Int       @unique @map("user_id")
   name      String    @unique
+  slug      String    @unique() @default(uuid()) @db.VarChar(255)
   address   String    @unique
   logo      String
   banner    String?
@@ -65,43 +73,83 @@ model Store {
 }
 
 model Color {
-  id        Int       @id @default(autoincrement())
-  name      String
-  value     String
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  Product   Product[]
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  value                  String
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+  ColorsOnSizesOnProduct ColorsOnSizesOnProduct[]
 
   @@map("colors")
 }
 
 model Size {
-  id        Int       @id @default(autoincrement())
-  name      String
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  Product   Product[]
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+  ColorsOnSizesOnProduct ColorsOnSizesOnProduct[]
 
   @@map("sizes")
 }
 
 model Product {
+  id                     Int                      @id @default(autoincrement())
+  title                  String
+  description            String
+  slug                   String                   @unique() @default(uuid()) @db.VarChar(255)
+  price                  Decimal                  @db.Decimal(8, 2)
+  discount               Decimal?                 @default(0) @db.Decimal(5, 2)
+  storeId                Int                      @map("store_id")
+  mainImage              String                   @map("main_image")
+  isPublished            Boolean?                 @default(false) @map("is_published")
+  ProductImage           ProductImage[]
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+  store                  Store                    @relation(fields: [storeId], references: [id])
+  ColorsOnSizesOnProduct ColorsOnSizesOnProduct[]
+  Category               Category?                @relation(fields: [categoryId], references: [id])
+  categoryId             Int?
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement())
+  productId Int      @map("product_id")
+  image     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("product_images")
+}
+
+model ColorsOnSizesOnProduct {
   id            Int      @id @default(autoincrement())
-  name          String
-  description   String
-  price         Decimal  @db.Decimal(8, 2)
-  stockQuantity Int?     @default(1) @map("stock_quantity")
-  discount      Decimal? @default(0) @db.Decimal(5, 2)
-  storeId       Int      @map("store_id")
+  productId     Int      @map("product_id")
   colorId       Int      @map("color_id")
   sizeId        Int      @map("size_id")
+  stockQuantity Int?     @default(1) @map("stock_quantity")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-  store         Store    @relation(fields: [storeId], references: [id])
+  product       Product  @relation(fields: [productId], references: [id])
   color         Color    @relation(fields: [colorId], references: [id])
   size          Size     @relation(fields: [sizeId], references: [id])
 
-  @@map("products")
+  @@map("colors_on_sizes_on_products")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  slug      String    @unique() @default(uuid()) @db.VarChar(255)
+  parentId  Int?      @map("parent_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  Product   Product[]
+
+  @@map("categories")
 }
 
 model Country {

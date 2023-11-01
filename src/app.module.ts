@@ -11,6 +11,8 @@ import { ColorModule } from "./settings/color/color.module";
 import { SizeModule } from "./settings/size/size.module";
 import { JwtModule } from "@nestjs/jwt";
 import { jwtConstants } from "./auth/constants";
+import { ProductModule } from './product/product.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { jwtConstants } from "./auth/constants";
     CountryModule,
     ColorModule,
     SizeModule,
+    ProductModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
