@@ -10,6 +10,8 @@ import { prismaClientQueryEngineErrorCodesMap } from "../static/primsa-client-qu
 import { getReasonPhrase } from "http-status-codes";
 import { Prisma } from "@prisma/client";
 
+const PRISMA_EXCEPTION_FORMAT_REGEX = /[^]*\n([^]*)$/;
+
 const createResponseFactory =
   (statusCode: number) => (message: string, path: string) => ({
     statusCode,
@@ -27,9 +29,18 @@ export class GlobalExceptionFilter extends BaseExceptionFilter {
     const request = context.getRequest<Request>();
 
     const path = request.url;
-    console.log(exception);
+
     if (exception instanceof Prisma.PrismaClientKnownRequestError) {
-      const message = exception.message.replaceAll(/\n/g, "");
+      let message = exception.message.replaceAll(/\n/g, "");
+
+      const prismaException = exception.message.match(
+        PRISMA_EXCEPTION_FORMAT_REGEX,
+      );
+
+      if (prismaException && prismaException[1]) {
+        message = prismaException[1].trim();
+      }
+
       const exceptionCode =
         exception.code as keyof typeof prismaClientQueryEngineErrorCodesMap;
 

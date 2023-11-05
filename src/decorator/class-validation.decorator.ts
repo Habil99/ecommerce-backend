@@ -43,3 +43,27 @@ export const IsFile = (
     });
   };
 };
+
+export function IsNotEqualTo(
+  property: string,
+  validationOptions?: ValidationOptions,
+) {
+  return (object: Record<string, any>, propertyName: string) => {
+    registerDecorator({
+      name: "isNotEqualTo",
+      target: object.constructor,
+      propertyName: propertyName,
+      options: {
+        message: `${propertyName} should not be equal to ${property}`,
+        ...validationOptions,
+      },
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const relatedValue = (args.object as any)[property];
+          if (typeof relatedValue === "undefined") return true;
+          return value !== relatedValue;
+        },
+      },
+    });
+  };
+}

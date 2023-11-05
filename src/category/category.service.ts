@@ -1,8 +1,15 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  UnprocessableEntityException,
+} from "@nestjs/common";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { PrismaService } from "../service/prisma.service";
-import { ENTITY_NOT_FOUND } from "../lib/error-messages";
+import {
+  ENTITY_NOT_FOUND,
+  PARENT_CATEGORY_CANNOT_BE_ITSELF,
+} from "../lib/error-messages";
 
 @Injectable()
 export class CategoryService {
@@ -21,16 +28,12 @@ export class CategoryService {
       }
     }
 
-    try {
-      return await this.prismaService.category.create({
-        data: {
-          name,
-          parentId: parentId || null,
-        },
-      });
-    } catch (e) {
-      throw new BadRequestException(ENTITY_NOT_FOUND("Category", "parentId"));
-    }
+    return this.prismaService.category.create({
+      data: {
+        name,
+        parentId: parentId || null,
+      },
+    });
   }
 
   findAll() {
@@ -51,6 +54,10 @@ export class CategoryService {
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const { name, parentId } = updateCategoryDto;
+
+    if (parentId !== undefined && id === parentId) {
+      throw new UnprocessableEntityException(PARENT_CATEGORY_CANNOT_BE_ITSELF);
+    }
 
     return this.prismaService.category.update({
       where: { id },

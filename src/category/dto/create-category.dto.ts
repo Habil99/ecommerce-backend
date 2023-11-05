@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEqualTo } from "../../decorator/class-validation.decorator";
 
 export class CreateCategoryDto {
   @ApiProperty({
@@ -15,6 +16,7 @@ export class CreateCategoryDto {
     type: Number,
   })
   @IsNumber()
+  @IsNotEqualTo("id")
   @IsOptional()
   parentId?: number;
 }
