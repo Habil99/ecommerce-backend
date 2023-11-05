@@ -10,6 +10,7 @@ import { prismaClientQueryEngineErrorCodesMap } from "../static/primsa-client-qu
 import { getReasonPhrase } from "http-status-codes";
 import { Prisma } from "@prisma/client";
 
+// this regex is used to extract the error message from the Prisma error
 const PRISMA_EXCEPTION_FORMAT_REGEX = /[^]*\n([^]*)$/;
 
 const createResponseFactory =
