@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -38,7 +39,7 @@ export class AuthGuard implements CanActivate {
         secret: jwtConstants.secret,
       });
     } catch {
-      throw new UnauthorizedException(UNAUTHORIZED_CLIENT);
+      throw new ForbiddenException(UNAUTHORIZED_CLIENT);
     }
 
     return true;

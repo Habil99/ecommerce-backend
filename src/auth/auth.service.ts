@@ -1,9 +1,9 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { PrismaService } from "../service/prisma.service";
 import { SignInDto } from "./dto/sign-in.dto";
@@ -161,7 +161,7 @@ export class AuthService {
     const { id: userId } = this.jwtService.verify(refreshToken);
 
     if (!userId) {
-      return new ForbiddenException(INVALID_REFRESH_TOKEN);
+      return new UnauthorizedException(INVALID_REFRESH_TOKEN);
     }
 
     try {
